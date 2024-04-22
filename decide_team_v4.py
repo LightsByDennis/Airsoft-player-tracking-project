@@ -4,7 +4,7 @@ from ultralytics import YOLO
 from packages import sort, turret
 from threading import Thread
 import time, tkinter
-import RPi.GPIO as GPIO
+from time import sleep
 
 enemy_teams = ['red']
 
@@ -12,30 +12,107 @@ enemy_teams = ['red']
 # Setting up Stepper Motor functions
 # =================================================================================
 
-DIR1 = 10
-STEP1 = 8
-DIR2 = 10
-STEP2 = 8
+'''
+
+import RPi.GPIO as GPIO
+
+Step1Return = 1260   # How many steps to get back to center on motor 1
+Step2Return = 1260   # How many steps to get back to center on motor 2
+
+Enable = 40
+Dir1 = 7
+Step1 = 12
+Dir2 = 18
+Step2 = 23
 CW = 1
 CCW = 0
+Limit1 = 32
+Limit2 = 36
+firstRun = 1
+Limit1Found = 0
+Limit2Found = 0
 
 GPIO.setmode(GPIO.BOARD)
 
 # Establish Pins in software
-GPIO.setup(DIR1, GPIO.OUT)
-GPIO.setup(STEP1, GPIO.OUT)
-GPIO.setup(DIR2, GPIO.OUT)
-GPIO.setup(STEP2, GPIO.OUT)
+GPIO.setup(Dir1, GPIO.OUT)
+GPIO.setup(Step1, GPIO.OUT)
+GPIO.setup(Dir2, GPIO.OUT)
+GPIO.setup(Step2, GPIO.OUT)
+GPIO.setup(Enable, GPIO.OUT)
+GPIO.setup(Limit1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(Limit2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+# Setting initial output Low
+GPIO.setup(Dir1, GPIO.LOW)
+GPIO.setup(Dir2, GPIO.LOW)
+GPIO.setup(Step1, GPIO.LOW)
+GPIO.setup(Step2, GPIO.LOW)
+GPIO.setup(Enable, GPIO.HIGH)
 
 # =================================================================================
 # Calibrate to home position
 # =================================================================================
 
-# Calibration code here
+try:
+    while firstRun == 1:
+        print("Initialising calibration run")
+        sleep(.2)
+        GPIO.output(Dir1, CW)
+        GPIO.output(Dir2, CW)
+
+        if GPIO.input(Limit1):
+            print("Limit switch 1 is pressed")
+            Limit1Found = 1
+
+        if GPIO.input(Limit2):
+            print("Limit switch 2 is pressed")
+            Limit2Found = 1
+
+        if (Limit1Found != 1):
+            print("Stepping Motor 1")
+            GPIO.output(Step1, GPIO.HIGH)
+            sleep(.005)
+            GPIO.output(Step1, GPIO.LOW)
+            sleep(.005)
+
+        if (Limit2Found != 1):
+            print("Stepping Motor 2")
+            GPIO.output(Step2, GPIO.HIGH)
+            sleep(.005)
+            GPIO.output(Step2, GPIO.LOW)
+            sleep(.005)
+
+        if (Limit1Found == 1 and Limit2Found == 1):
+            print("Both limits found")
+            GPIO.output(Dir1, CCW)
+            GPIO.output(Dir2, CCW)
+
+            for x in range (Step1Return):
+                print("Stepping back step number " + x + " out of " + Step1Return + " on motor 1")
+                GPIO.output(Step1, GPIO.HIGH)
+                sleep(.005)
+                GPIO.output(Step1, GPIO.LOW)
+                sleep(.005)
+
+            for x in range (Step2Return):
+                print("Stepping back step number " + x + " out of " + Step2Return + " on motor 2")
+                GPIO.output(Step2, GPIO.HIGH)
+                sleep(.005)
+                GPIO.output(Step2, GPIO.LOW)
+                sleep(.005)
+
+            firstRun = 0
+            break
+
+except:
+    print("error")
 
 # =================================================================================
-#
+# Completed startup sequence
 # =================================================================================
+
+'''
 
 class WebcamStream : #credits to https://github.com/vasugupta9 (https://github.com/vasugupta9/DeepLearningProjects/blob/main/MultiThreadedVideoProcessing/video_processing_parallel.py)
     def __init__(self, stream_id=0): 
@@ -285,7 +362,6 @@ while True: # Main loop !!!!!!
 
     if len(enemies) > 0:
         closest_center, closest_enemy = find_closest_enemy(enemies,screencenter)
-
         
         # Calculate distances
         distance_x = abs(closest_center[0] - screencenter[0])
