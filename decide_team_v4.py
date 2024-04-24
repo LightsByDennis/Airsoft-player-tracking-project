@@ -12,12 +12,14 @@ enemy_teams = ['red']
 # Setting up Stepper Motor functions
 # =================================================================================
 
-'''
-
 import RPi.GPIO as GPIO
 
 Step1Return = 1260   # How many steps to get back to center on motor 1
 Step2Return = 1260   # How many steps to get back to center on motor 2
+
+RPM = 60
+PulsePerRotation = 400
+PulseSleep = (1 / ((RPM / 60) * PulsePerRotation)) / 2
 
 Enable = 40
 Dir1 = 7
@@ -48,6 +50,8 @@ GPIO.setup(Dir1, GPIO.LOW)
 GPIO.setup(Dir2, GPIO.LOW)
 GPIO.setup(Step1, GPIO.LOW)
 GPIO.setup(Step2, GPIO.LOW)
+GPIO.setup(Limit1, GPIO.LOW)
+GPIO.setup(Limit2, GPIO.LOW)
 GPIO.setup(Enable, GPIO.HIGH)
 
 # =================================================================================
@@ -56,8 +60,7 @@ GPIO.setup(Enable, GPIO.HIGH)
 
 try:
     while firstRun == 1:
-        print("Initialising calibration run")
-        sleep(.2)
+        print("Calibrating run")
         GPIO.output(Dir1, CW)
         GPIO.output(Dir2, CW)
 
@@ -69,19 +72,17 @@ try:
             print("Limit switch 2 is pressed")
             Limit2Found = 1
 
+        sleep(PulseSleep)
+
         if (Limit1Found != 1):
             print("Stepping Motor 1")
             GPIO.output(Step1, GPIO.HIGH)
-            sleep(.005)
             GPIO.output(Step1, GPIO.LOW)
-            sleep(.005)
 
         if (Limit2Found != 1):
             print("Stepping Motor 2")
             GPIO.output(Step2, GPIO.HIGH)
-            sleep(.005)
             GPIO.output(Step2, GPIO.LOW)
-            sleep(.005)
 
         if (Limit1Found == 1 and Limit2Found == 1):
             print("Both limits found")
@@ -111,8 +112,6 @@ except:
 # =================================================================================
 # Completed startup sequence
 # =================================================================================
-
-'''
 
 class WebcamStream : #credits to https://github.com/vasugupta9 (https://github.com/vasugupta9/DeepLearningProjects/blob/main/MultiThreadedVideoProcessing/video_processing_parallel.py)
     def __init__(self, stream_id=0): 
@@ -256,7 +255,7 @@ def find_closest_enemy(enemies,screencenter):
                 closest_center = center
         return closest_center, enemies[centers.index(closest_center)]
 
-model = YOLO('.\\Yolo weights\\yolov8s.pt') # load up neural network model
+model = YOLO('./Yolo weights/yolov8n.pt') # load up neural network model
 
 tracker = sort.Sort(30,1)
 
