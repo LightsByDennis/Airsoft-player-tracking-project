@@ -73,7 +73,7 @@ def index():
 
  
 
-@app.route('/images/<filename')
+@app.route('/images/filename')
 
 def get_image(filename):
 
@@ -86,6 +86,8 @@ def get_image(filename):
 @app.route('/turnOn')
 
 def turnOn():
+
+       print("turn on triggered")
 
        for x in range(0, 5000):
 
@@ -111,4 +113,4 @@ def turnOff():
 
  
 
-app.run(debug=true, port=3000, host='0.0.0.0')
+app.run(debug=True, port=3000, host='0.0.0.0')

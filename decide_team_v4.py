@@ -533,7 +533,7 @@ def find_closest_enemy(enemies,screencenter):
 
 
 
-model = YOLO('./Yolo weights/yolov8n.pt') # load up neural network model
+model = YOLO('./Yolo weights/yolov5n.pt') # load up neural network model
 
 
 
