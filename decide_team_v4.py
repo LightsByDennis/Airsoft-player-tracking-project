@@ -30,6 +30,8 @@ CW = 1
 CCW = 0
 Limit1 = 32
 Limit2 = 36
+Limit1Send = 31
+Limit2Send = 35
 firstRun = 1
 Limit1Found = 0
 Limit2Found = 0
@@ -42,16 +44,18 @@ GPIO.setup(Step1, GPIO.OUT)
 GPIO.setup(Dir2, GPIO.OUT)
 GPIO.setup(Step2, GPIO.OUT)
 GPIO.setup(Enable, GPIO.OUT)
-GPIO.setup(Limit1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(Limit2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(Limit1, GPIO.IN) #pull_up_down=GPIO.PUD_UP 
+GPIO.setup(Limit2, GPIO.IN) #pull_up_down=GPIO.PUD_UP
+GPIO.setup(Limit1Send, GPIO.OUT)
+GPIO.setup(Limit2Send, GPIO.OUT)
 
 # Setting initial output Low
 GPIO.setup(Dir1, GPIO.LOW)
 GPIO.setup(Dir2, GPIO.LOW)
 GPIO.setup(Step1, GPIO.LOW)
 GPIO.setup(Step2, GPIO.LOW)
-GPIO.setup(Limit1, GPIO.LOW)
-GPIO.setup(Limit2, GPIO.LOW)
+GPIO.setup(Limit1Send, GPIO.HIGH)
+GPIO.setup(Limit2Send, GPIO.HIGH)
 GPIO.setup(Enable, GPIO.HIGH)
 
 # =================================================================================
