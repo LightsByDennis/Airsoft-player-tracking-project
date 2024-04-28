@@ -21,7 +21,7 @@ Step1Return = 1260   # How many steps to get back to center on motor 1
 Step2Return = 1260   # How many steps to get back to center on motor 2
 
 RPM = 60
-PulsePerRotation = 400
+PulsePerRotation = 800
 PulseSleep = (1 / ((RPM / 60) * PulsePerRotation)) / 2
 
 Enable = 40
@@ -80,6 +80,22 @@ try:
 
 except:
     print("error")
+
+try:
+    GPIO.output(Dir1, CCW)
+    GPIO.output(Dir2, CCW)
+    for x in range(0, Step1Return):
+        sleep(PulseSleep)
+        GPIO.output(Step1, GPIO.HIGH)
+        GPIO.output(Step1, GPIO.LOW)
+    
+    for x in range(0, Step1Return):
+        sleep(PulseSleep)
+        GPIO.output(Step2, GPIO.HIGH)
+        GPIO.output(Step2, GPIO.LOW)
+
+except:
+    print("Error part 2 Electric Boogaloo")
 
 # =================================================================================
 # Completed startup sequence
