@@ -5,8 +5,11 @@ from packages import sort, turret
 from threading import Thread
 import time, tkinter
 from time import sleep
+import time
 
 enemy_teams = ['red']
+calibrationTimeLimit = 5
+start_time = time.time()
 
 # =================================================================================
 # Setting up Stepper Motor functions
@@ -28,13 +31,7 @@ Dir2 = 18
 Step2 = 23
 CW = 1
 CCW = 0
-Limit1 = 32
-Limit2 = 36
-Limit1Send = 31
-Limit2Send = 35
 firstRun = 1
-Limit1Found = 0
-Limit2Found = 0
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -44,18 +41,12 @@ GPIO.setup(Step1, GPIO.OUT)
 GPIO.setup(Dir2, GPIO.OUT)
 GPIO.setup(Step2, GPIO.OUT)
 GPIO.setup(Enable, GPIO.OUT)
-GPIO.setup(Limit1, GPIO.IN) #pull_up_down=GPIO.PUD_UP 
-GPIO.setup(Limit2, GPIO.IN) #pull_up_down=GPIO.PUD_UP
-GPIO.setup(Limit1Send, GPIO.OUT)
-GPIO.setup(Limit2Send, GPIO.OUT)
 
 # Setting initial output Low
 GPIO.setup(Dir1, GPIO.LOW)
 GPIO.setup(Dir2, GPIO.LOW)
 GPIO.setup(Step1, GPIO.LOW)
 GPIO.setup(Step2, GPIO.LOW)
-GPIO.setup(Limit1Send, GPIO.HIGH)
-GPIO.setup(Limit2Send, GPIO.HIGH)
 GPIO.setup(Enable, GPIO.HIGH)
 
 # =================================================================================
@@ -64,51 +55,28 @@ GPIO.setup(Enable, GPIO.HIGH)
 
 try:
     while firstRun == 1:
+        current_time = time.time()
+
+    # Calculate the elapsed time
+        elapsed_time = current_time - start_time
+
+    # Exit the loop if the time limit is reached
+        if elapsed_time >= calibrationTimeLimit:
+            break
+
         print("Calibrating run")
         GPIO.output(Dir1, CW)
         GPIO.output(Dir2, CW)
 
-        if GPIO.input(Limit1):
-            print("Limit switch 1 is pressed")
-            Limit1Found = 1
-
-        if GPIO.input(Limit2):
-            print("Limit switch 2 is pressed")
-            Limit2Found = 1
-
         sleep(PulseSleep)
 
-        if (Limit1Found != 1):
-            print("Stepping Motor 1")
-            GPIO.output(Step1, GPIO.HIGH)
-            GPIO.output(Step1, GPIO.LOW)
+        print("Stepping Motor 1")
+        GPIO.output(Step1, GPIO.HIGH)
+        GPIO.output(Step1, GPIO.LOW)
 
-        if (Limit2Found != 1):
-            print("Stepping Motor 2")
-            GPIO.output(Step2, GPIO.HIGH)
-            GPIO.output(Step2, GPIO.LOW)
-
-        if (Limit1Found == 1 and Limit2Found == 1):
-            print("Both limits found")
-            GPIO.output(Dir1, CCW)
-            GPIO.output(Dir2, CCW)
-
-            for x in range (Step1Return):
-                print("Stepping back step number " + x + " out of " + Step1Return + " on motor 1")
-                GPIO.output(Step1, GPIO.HIGH)
-                sleep(.005)
-                GPIO.output(Step1, GPIO.LOW)
-                sleep(.005)
-
-            for x in range (Step2Return):
-                print("Stepping back step number " + x + " out of " + Step2Return + " on motor 2")
-                GPIO.output(Step2, GPIO.HIGH)
-                sleep(.005)
-                GPIO.output(Step2, GPIO.LOW)
-                sleep(.005)
-
-            firstRun = 0
-            break
+        print("Stepping Motor 2")
+        GPIO.output(Step2, GPIO.HIGH)
+        GPIO.output(Step2, GPIO.LOW)
 
 except:
     print("error")
