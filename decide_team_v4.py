@@ -14,7 +14,8 @@ from time import sleep
 
 import time
 
-
+customWidth = 640
+customHeight = 480
 
 enemy_teams = ['red']
 
@@ -555,9 +556,10 @@ stream.start()
 
 
 
-width = int(stream.vcap.get(cv.CAP_PROP_FRAME_WIDTH ))
-
-height = int(stream.vcap.get(cv.CAP_PROP_FRAME_HEIGHT ))
+#width = int(stream.vcap.get(cv.CAP_PROP_FRAME_WIDTH ))
+width = int(640)
+#height = int(stream.vcap.get(cv.CAP_PROP_FRAME_HEIGHT ))
+height = int(480)
 
 screencenter = [round(width/2),round(height/2)]
 
@@ -633,9 +635,9 @@ while True: # Main loop !!!!!!
 
     frame = stream.read() #get frame from camera
 
-    
+    resizedFrame= cv.resize(frame, (customWidth, customHeight))
 
-    detection = model(frame,stream=True) #detect objects in frame trough neural network
+    detection = model(resizedFrame,stream=True) #detect objects in frame trough neural network
 
 
 
