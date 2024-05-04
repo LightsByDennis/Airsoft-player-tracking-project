@@ -165,7 +165,7 @@ if __name__ == "__main__":
     modelPath = "/home/dennis/Desktop/Projects/Airsoft-player-tracking-project/yolov8n_saved_model/yolov8n_full_integer_quant.tflite"
     camera_idx = 0
     confThreshold = 0.1
-    pwm_gpio = config["motor"].getint("gpio_pin")
+    pwm_gpio = 10
     show = True
     enable_motor = False
     process_video(model_path=modelPath,video_source=camera_idx,pwm_gpio=pwm_gpio,show=show,enable_motor=enable_motor)
