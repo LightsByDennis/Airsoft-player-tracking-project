@@ -162,10 +162,10 @@ if __name__ == "__main__":
     # Load the configuration file
     args = parser.parse_args()
     config.read(args.cfg)
-    modelPath = config["detector"]["model_path"]
-    camera_idx = config["detector"]["camera_idx"]
-    confThreshold = config["detector"].getfloat("conf_threshold")
+    modelPath = "/home/dennis/Desktop/Projects/Airsoft-player-tracking-project/yolov8n_saved_model/yolov8n_full_integer_quant.tflite"
+    camera_idx = 0
+    confThreshold = 0.1
     pwm_gpio = config["motor"].getint("gpio_pin")
-    show = config["general"].getboolean("show")
-    enable_motor = config["motor"].getboolean('enable')
+    show = True
+    enable_motor = False
     process_video(model_path=modelPath,video_source=camera_idx,pwm_gpio=pwm_gpio,show=show,enable_motor=enable_motor)
