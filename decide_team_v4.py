@@ -69,9 +69,9 @@ import RPi.GPIO as GPIO
 
 
 
-Step1Return = 4600   # How many steps to get back to center on motor 1
+Step1Return = 600   # How many steps to get back to center on motor 1
 
-Step2Return = 4600   # How many steps to get back to center on motor 2
+Step2Return = 600   # How many steps to get back to center on motor 2
 
 
 
@@ -530,9 +530,9 @@ def find_closest_enemy(enemies,screencenter):
 
 
 
-model = YOLO('./Yolo weights/yolov8n.pt') # load up neural network model
-
-
+#model = YOLO('./Yolo weights/yolov8n.pt') #Base performance 1FPS
+model = YOLO('./yolov8n_saved_model/yolov8n_full_integer_quant.tflite') #TFLOW model 3FPS
+#model = YOLO('./yolov8n_saved_model/yolov8n_integer_quant.tflite') 700ms
 
 tracker = sort.Sort(30,1)
 
