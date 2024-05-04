@@ -8,14 +8,10 @@ from ultralytics import YOLO
 from PIL import Image
 import argparse
 
-from log import logger
-
 # define the function that handles our processing thread
 def process_video(model_path:str,video_source,pwm_gpio:int,show:bool=True,enable_motor:bool=False):
 
     global model
-    motor_pos = [0,45,90,135,180]
-    motor_index = 2
     font = cv2.FONT_HERSHEY_SIMPLEX
     queuepulls = 0.0
     detections = 0
@@ -27,7 +23,6 @@ def process_video(model_path:str,video_source,pwm_gpio:int,show:bool=True,enable
 
     frameWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frameHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    logger.info(f"[info] W, H, FPS\n{frameWidth}, {frameHeight}, {cap.get(cv2.CAP_PROP_FPS)}")
 
     # initialize the input queue (frames), output queue (out),
     # and the list of actual detections returned by the child process
@@ -39,12 +34,10 @@ def process_video(model_path:str,video_source,pwm_gpio:int,show:bool=True,enable
 
     # construct a child process *indepedent* from our main process of
     # execution
-    logger.info("Starting process...")
     p = Process(target=classify_frame, args=(img, inputQueue, outputQueue,))
     p.daemon = True
     p.start()
     time.sleep(10)
-    logger.info("Starting capture...")
 
     # time the frame rate....
     timer1 = time.time()
