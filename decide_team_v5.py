@@ -67,57 +67,21 @@ def process_video(model_path:str,video_source,pwm_gpio:int,show:bool=True,enable
                 out = outputQueue.get()
 
             if out is not None:
-                ball_xC = 0
-                ball_yC = 0
-                # loop over the detections
-                for box  in out:
-                    print(str(box[5]))
-                    xmin = int(box[0])
-                    ymin = int(box[1])
-                    xmax = int(box[2])
-                    ymax = int(box[3])
-                    objID = int(box[5])
-                    confidence = box[4]
-                    ball_xC += (xmin+xmax)/2
-                    ball_yC += (ymin+ymax)/2
+              for detected in out: 
 
-                    if confidence > confThreshold:
-                        # bounding box
-                        cv2.rectangle(frame, (xmin, ymin),
-                                    (xmax, ymax), color=(0, 0, 255))
-                        detections += 1  # positive detections
-                if len(out)>0:
-                    ball_xC /= len(out)
-                    ball_yC /= len(out)
-                cv2.circle(frame,(int(ball_xC),int(ball_yC)), 5, (0,0,255), -1)            
-                queuepulls += 1
+                boxes = detected.boxes
 
-            if show:
-                # Display the resulting frame
-                cv2.rectangle(frame, (0, 0),
-                            (frameWidth, 20), (0, 0, 0), -1)
+                for box in boxes:
 
-                cv2.rectangle(frame, (0, frameHeight-20),
-                            (frameWidth, frameHeight), (0, 0, 0), -1)
-                cv2.putText(frame, 'Threshold: '+str(round(confThreshold, 1)), (10, 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 255), 1, cv2.LINE_AA)
+                    x1, y1, x2, y2 = box.xyxy[0]
 
-                cv2.putText(frame, 'VID FPS: '+str(fps), (frameWidth-80, 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 255), 1, cv2.LINE_AA)
+                    x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
 
-                cv2.putText(frame, 'TPU FPS: '+str(qfps), (frameWidth-80, 20),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 255), 1, cv2.LINE_AA)
+                    if int(box.cls[0]) == 0 and len(frame[y1:y2,x1:x2]) > 0:
 
-                cv2.putText(frame, 'Positive detections: '+str(detections), (10, frameHeight-10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 255), 1, cv2.LINE_AA)
+                        person_arr = np.array([x1,y1,x2,y2,box.conf[0].cpu().numpy()]) #get data about detection into format required by tracker
 
-                cv2.putText(frame, 'Elapsed time: '+str(round(t2secs, 2)), (150, frameHeight-10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 255), 1, cv2.LINE_AA)
-
-                cv2.namedWindow('Coral', cv2.WINDOW_NORMAL)
-                cv2.resizeWindow('Coral', frameWidth, frameHeight)
-                cv2.imshow('Coral', frame)
-                cv2.waitKey(1)
+                        people = np.vstack((people,person_arr))
 
             
             # FPS calculation
@@ -149,8 +113,8 @@ def classify_frame(img, inputQueue, outputQueue):
         if not inputQueue.empty():
             # grab the frame from the input queue
             img = inputQueue.get()
-            objs = model.predict(img,conf=confThreshold,verbose=False)[0]
-            outputQueue.put(objs.cpu().numpy().boxes.data)
+            objs = model(img)
+            outputQueue.put(objs)
 
 import configparser
 
