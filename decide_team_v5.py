@@ -127,7 +127,6 @@ class WebcamStream : #credits to https://github.com/vasugupta9 (https://github.c
 
         self.stream_id = stream_id   # default is 0 for primary camera 
 
-        
 
         # opening video capture stream 
 
