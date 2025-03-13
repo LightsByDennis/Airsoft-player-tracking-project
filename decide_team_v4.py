@@ -531,8 +531,10 @@ def find_closest_enemy(enemies,screencenter):
 
 
 #model = YOLO('./Yolo weights/yolov8n.pt') #Base performance 1FPS
-model = YOLO('./yolov8n_saved_model/yolov8n_full_integer_quant.tflite') #TFLOW model 3FPS
-#model = YOLO('./yolov8n_saved_model/yolov8n_integer_quant.tflite') 700ms
+#model = YOLO('./Yolo weights/yolo11n.pt') #Base performance 1FPS
+#model = YOLO('./yolov8n_saved_model/yolov8n_full_integer_quant.tflite') #TFLOW model 3FPS
+model = YOLO('./yolo11n_saved_model/yolo11n_full_integer_quant.tflite') #TFLOW model 3FPS
+#model = YOLO('./yolov8n_saved_model/yolov8n_integer_quant.tflite') #700ms
 
 tracker = sort.Sort(30,1)
 
@@ -637,7 +639,7 @@ while True: # Main loop !!!!!!
 
     resizedFrame= cv.resize(frame, (customWidth, customHeight))
 
-    detection = model(resizedFrame,stream=True) #detect objects in frame trough neural network
+    detection = model(resizedFrame,stream=True,classes=0) #detect objects in frame trough neural network
 
 
 
