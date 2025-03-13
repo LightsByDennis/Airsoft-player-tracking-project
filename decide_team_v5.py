@@ -52,6 +52,8 @@ def process_video(model_path:str,video_source,pwm_gpio:int,show:bool=True,enable
 
         if ret == True:
 
+            people = np.empty((0,5))
+
             if queuepulls == 1:
                 timer2 = time.time()
             # Capture frame-by-frame
